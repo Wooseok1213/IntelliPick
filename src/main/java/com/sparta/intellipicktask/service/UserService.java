@@ -1,15 +1,12 @@
 package com.sparta.intellipicktask.service;
 
-import com.sparta.intellipicktask.dto.LoginRequestDto;
 import com.sparta.intellipicktask.dto.SignUpRequestDto;
 import com.sparta.intellipicktask.dto.SignUpResponseDto;
 import com.sparta.intellipicktask.entity.User;
 import com.sparta.intellipicktask.entity.UserRoleEnum;
 import com.sparta.intellipicktask.enums.ErrorType;
 import com.sparta.intellipicktask.exception.CustomException;
-import com.sparta.intellipicktask.security.jwt.JwtUtil;
 import com.sparta.intellipicktask.repository.UserRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,12 +14,16 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 
 public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public SignUpResponseDto signup(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();

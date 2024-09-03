@@ -7,19 +7,15 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-@Slf4j(topic = "JwtUtil")
+@Slf4j
 @Component
 
 public class JwtUtil {
@@ -40,9 +36,6 @@ public class JwtUtil {
     private String secretKey;
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
-    // 로그 설정
-    public static final Logger logger = LoggerFactory.getLogger("JWT 로그");
 
     //중복호출방지(1번만 부를때)
     @PostConstruct
@@ -65,11 +58,11 @@ public class JwtUtil {
     }
 
     // accessToken 생성
-    public String createRefreshToken(String userId, UserRoleEnum role){
+    public String createRefreshToken(String username, UserRoleEnum role){
         Date date = new Date();
 
         return BEARER_PREFIX + Jwts.builder()
-                .setSubject(userId)
+                .setSubject(username)
                 .claim(AUTHORIZATION_KEY, role)
                 .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_EXPIRE_TIME))
                 .setIssuedAt(date)
@@ -82,7 +75,7 @@ public class JwtUtil {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
         }
-        logger.error("Not Found Token");
+//        log.error("Not Found Token");
         throw new NullPointerException("Not Found Token");
     }
 
@@ -92,16 +85,16 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+//            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
             request.setAttribute("jwtException", ErrorType.INVALID_JWT);
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.");
+//            log.error("Expired JWT token, 만료된 JWT token 입니다.");
             request.setAttribute("jwtException", ErrorType.EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+//            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
             request.setAttribute("jwtException", ErrorType.EXPIRED_JWT);
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+//            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
             request.setAttribute("jwtException", ErrorType.INVALID_JWT);
         }
         return false;
