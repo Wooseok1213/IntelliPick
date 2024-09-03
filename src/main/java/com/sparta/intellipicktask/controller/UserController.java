@@ -3,6 +3,8 @@ package com.sparta.intellipicktask.controller;
 import com.sparta.intellipicktask.dto.SignUpRequestDto;
 import com.sparta.intellipicktask.dto.SignUpResponseDto;
 import com.sparta.intellipicktask.service.UserService;
+import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +20,7 @@ public class UserController {
     private final UserService service;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> signUp(@RequestBody SignUpRequestDto requestDto) {
+    public ResponseEntity<?> signUp(@RequestBody SignUpRequestDto requestDto) {
         SignUpResponseDto responseDto = service.signup(requestDto);
         return ResponseEntity.ok().body(responseDto);
     }

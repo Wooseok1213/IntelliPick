@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,9 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-@Slf4j
+@Slf4j(topic = "JwtUtil")
 @Component
+
 public class JwtUtil {
     // accessToken 토큰 헤더
     public static final String AUTH_ACCESS_HEADER = "Authorization";

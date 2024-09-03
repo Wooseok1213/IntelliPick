@@ -2,6 +2,7 @@ package com.sparta.intellipicktask.security.jwt;
 
 import com.sparta.intellipicktask.entity.User;
 import com.sparta.intellipicktask.entity.UserRoleEnum;
+import com.sparta.intellipicktask.enums.ErrorType;
 import com.sparta.intellipicktask.exception.CustomException;
 import com.sparta.intellipicktask.security.UserDetailsImpl;
 import com.sparta.intellipicktask.security.UserDetailsServiceImpl;
