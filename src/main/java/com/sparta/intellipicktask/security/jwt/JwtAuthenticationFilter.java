@@ -9,16 +9,18 @@ import com.sparta.intellipicktask.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-
 @Slf4j(topic = "로그인 및 JWT 생성")
+
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
@@ -48,40 +50,38 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throw new RuntimeException(e.getMessage());
         }
     }
-
     // 로그인 성공시 처리
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain, Authentication authResult) throws IOException {
         log.info("로그인 성공 및 jwt 생성");
-
-        //principal -> userDetail -> userDetailsImpl
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
-
-        //토큰에 넣을 accountId, role 추출
-        String accountId = user.getUsername();
+        //토큰에 넣을 getUsername, role 추출
+        String username = user.getUsername();
         UserRoleEnum role = user.getRole();
-
         //accessToken, refreshToken 생성
-        String accessToken = jwtUtil.createAccessToken(accountId, role);
-        String refreshToken = jwtUtil.createRefreshToken(accountId, role);
-
+        String accessToken = jwtUtil.createAccessToken(username, role);
+        String refreshToken = jwtUtil.createRefreshToken(username, role);
         //refreshToken 저장
         user.setRefreshToken(refreshToken.substring(7));
         userRepository.save(user);
-
         //헤더에 토큰 담기
         response.addHeader(JwtUtil.AUTH_ACCESS_HEADER, accessToken);
         response.addHeader(JwtUtil.AUTH_REFRESH_HEADER, refreshToken);
-
         //응답
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write("로그인 성공");
+//        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(accessToken.substring(7));
+        response.getWriter().flush();
     }
 
-
-
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                              HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException {
         log.info("로그인 실패");
         response.setStatus(401);
         response.getWriter().write("로그인 실패");
