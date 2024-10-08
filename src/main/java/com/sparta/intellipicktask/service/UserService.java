@@ -1,5 +1,6 @@
 package com.sparta.intellipicktask.service;
 
+import com.sparta.intellipicktask.dto.LoginRequestDto;
 import com.sparta.intellipicktask.dto.SignUpRequestDto;
 import com.sparta.intellipicktask.dto.SignUpResponseDto;
 import com.sparta.intellipicktask.entity.User;
@@ -7,7 +8,7 @@ import com.sparta.intellipicktask.entity.UserRoleEnum;
 import com.sparta.intellipicktask.enums.ErrorType;
 import com.sparta.intellipicktask.exception.CustomException;
 import com.sparta.intellipicktask.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,12 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     public SignUpResponseDto signup(SignUpRequestDto requestDto) {
@@ -54,5 +57,26 @@ public class UserService {
         return new SignUpResponseDto(user);
 
 
+    }
+
+    // 로그아웃
+    @Transactional
+    public boolean logout(Long id) {
+        User user = userRepository.findById(id).orElseThrow(()
+        -> new CustomException(ErrorType.NOT_FOUND_USER));
+        return user.logout();
+    }
+
+    @Transactional
+    public boolean login(LoginRequestDto requestDto, Long id) {
+        User user = userRepository.findById(id).orElseThrow(()
+                -> new CustomException(ErrorType.NOT_FOUND_USER));
+        if (!user.getUsername().equals(requestDto.getUsername())) {
+            new CustomException(ErrorType.INVALID_USERNAME);
+        }
+        if (!user.getPassword().equals(requestDto.getPassword())) {
+            new CustomException(ErrorType.INVALID_PASSWORD);
+        }
+        return user.login();
     }
 }

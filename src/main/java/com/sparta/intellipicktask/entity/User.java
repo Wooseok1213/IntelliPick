@@ -45,4 +45,14 @@ public class User {
     public boolean validateRefreshToken(String refreshToken) {
         return this.refreshToken != null && this.refreshToken.equals(refreshToken);
     }
+
+    public boolean logout() {
+        refreshToken = null;
+        return true;
+    }
+
+    public boolean login() {
+        refreshToken = null;
+        return false;
+    }
 }

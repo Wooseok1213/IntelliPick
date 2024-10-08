@@ -17,7 +17,7 @@ public enum ErrorType {
 
     // user
     DUPLICATE_ACCOUNT_ID(HttpStatus.LOCKED, "이미 아이디가 존재합니다."),
-    INVALID_ACCOUNT_ID(HttpStatus.UNAUTHORIZED, "아이디가 일치하지 않습니다."),
+    INVALID_USERNAME(HttpStatus.UNAUTHORIZED, "아이디가 일치하지 않습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     DUPLICATE_NICKNAME(HttpStatus.LOCKED, "중복된 닉네임입니다." ),
