@@ -9,16 +9,15 @@ import com.sparta.intellipicktask.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+
 @Slf4j(topic = "로그인 및 JWT 생성")
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -50,6 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throw new RuntimeException(e.getMessage());
         }
     }
+
     // 로그인 성공시 처리
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
@@ -68,7 +68,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         userRepository.save(user);
         //헤더에 토큰 담기
         response.addHeader(JwtUtil.AUTH_ACCESS_HEADER, accessToken);
-        response.addHeader(JwtUtil.AUTH_REFRESH_HEADER, refreshToken);
         //응답
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write("로그인 성공");
